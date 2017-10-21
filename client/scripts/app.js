@@ -1,14 +1,33 @@
 // YOUR CODE HERE:
 //
+// var indivual = new Message {
+//   this.username : window.location.search
+//   this.text: form
+// }
 
-var message = { 
-    username: 'jen',
-    text: 'hi'
-  };
-  var app = {
+// var Message = { 
+//     username: 'jen',
+//     text: 'hi'
+//   };
+// $("#send").click(function() {
+//   alert("some");
+//   console.log('send');
+// });
+
+var splitData = $( '#myField' ).val();
+// console.log(splitData);
+
+var app = {
     server: 'http://parse.sfs.hackreactor.com/',
     
-    init: function() {
+    unique: function(){ _.unique(this.results,false);
+     console.log(this.results);
+    },
+    
+    init: function() { 
+      //setInterval(()=>app.fetch(), 1000);
+      app.fetch();
+      
     },
 
     clearMessages: function() {
@@ -20,16 +39,24 @@ var message = {
     },
 
     renderMessage: function(message) {
-     // console.log($('#chats').length );
+     var userName = _.escape(message.username);
+     var text = _.escape(message.text);// console.log($('#chats').length );
       $('#chats')
         .append(`<div class = 'message'>
-                   <span>${message.username} : </span>${message.text}</div>`);
+                   <span>${userName} : </span>${text}</div>`);
     //console.log('test');
 //'<span>' + message.username + ' \n ' + message.text + '</span>'
     }, 
 
-    renderRoom: function (room) {
-      $('#roomSelect').append('<span>' + room + '</span>');
+    renderRoom: function (roomArray) {
+      roomArray.forEach(function(element) {
+        console.log(element);
+        $('#roomSelect').append(`<a href = "#"><li> ${element} + '</li></a>`);
+        
+      })
+      //console.log('hi', room);
+      //var uni = _.unique(chatroom);
+      //$('#roomSelect').append('<span>' + room + '</span>');
     },
 
     send: function(message) {
@@ -38,9 +65,10 @@ var message = {
         url: this.server + 'chatterbox/classes/messages',
         type: 'POST',
         data: message,
-        contentType: 'application/json',
+       // contentType: 'application/json',
         success: function (data) {
           console.log('chatterbox: Message sent');
+          //this.fetch();
         },
         error: function (data) {
           // See: https://developer.mozilla.org/en-US/docs/Web/API/console.error
@@ -49,23 +77,31 @@ var message = {
       });
     
     },
+    
     fetch: function() {
       $.ajax({
        
         // This is the url you should use to communicate with the parse API server.
         url: this.server + 'chatterbox/classes/messages',
         type: 'GET',
-        data:{},
+        data: 'order=-createdAt',
         contentType: 'application/json',
         success: function (data) {
           console.log('chatterbox: Message sent');
-          console.log(data);
+          //console.log(data);
           console.log(data.results);
+          app.clearMessages();
           var individualObjects = data.results.forEach(function(messages) {
-            console.log('++', this);
+            
             app.renderMessage(messages);
           })
-          //$('#chats').append('<span>\n' + data.results + '</span>');
+          var individualRooms = [];
+            data.results.forEach(function(room){
+              individualRooms.push(room.roomname);
+          });
+          var roomsArray = _.unique(individualRooms);
+          //console.log(test);
+          app.renderRoom(roomsArray);//console.log(individualRooms);//$('#chats').append('<span>\n' + data.results + '</span>');
         },
         error: function (data) {
           // See: https://developer.mozilla.org/en-US/docs/Web/API/console.error
@@ -73,7 +109,12 @@ var message = {
         }
       });
     } 
+
+    
+    
+    
+    
+    
   };
-  var storage = new XMLHttpRequest();
-  console.log(storage);
+
 //});
