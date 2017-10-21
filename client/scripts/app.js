@@ -1,7 +1,7 @@
 // YOUR CODE HERE:
 //
 
-  var message = { 
+var message = { 
     username: 'jen',
     text: 'hi'
   };
